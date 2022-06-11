@@ -46,6 +46,150 @@
 
 use std::str::SplitWhitespace;
 
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn no_options_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags.len(), 0);
+    }
+
+    #[test]
+    fn no_options_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("".to_owned());
+        parser.parse();
+        assert_eq!(parser.args.len(), 0);
+    }
+
+    #[test]
+    fn short_flag_no_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-a".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["a"]);
+    }
+
+    #[test]
+    fn short_flag_no_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-a".to_owned());
+        parser.parse();
+        assert_eq!(parser.args.len(), 0);
+    }
+
+    #[test]
+    fn short_flags_no_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-a -b -cd".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["a", "b", "c", "d"]);
+    }
+
+    #[test]
+    fn short_flags_no_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-a -b -cd".to_owned());
+        parser.parse();
+        assert_eq!(parser.args.len(), 0);
+    }
+
+    #[test]
+    fn long_flag_no_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["something"]);
+    }
+
+    #[test]
+    fn long_flag_no_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something".to_owned());
+        parser.parse();
+        assert_eq!(parser.args.len(), 0);
+    }
+
+    #[test]
+    fn long_flags_no_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something --something-else".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["something", "something-else"]);
+    }
+
+    #[test]
+    fn long_flags_no_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something --something-else".to_owned());
+        parser.parse();
+        assert_eq!(parser.args.len(), 0);
+    }
+
+    #[test]
+    fn short_flag_with_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-a something".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["a"]);
+    }
+
+    #[test]
+    fn short_flag_with_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-a something".to_owned());
+        parser.parse();
+        assert_eq!(parser.args, vec!["something"]);
+    }
+
+    #[test]
+    fn short_flags_with_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-ab something something-else".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["a", "b"]);
+    }
+
+    #[test]
+    fn short_flags_with_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("-ab something something-else".to_owned());
+        parser.parse();
+        assert_eq!(parser.args, vec!["something", "something-else"]);
+    }
+
+    #[test]
+    fn long_flag_with_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something something_else".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["something"]);
+    }
+
+    #[test]
+    fn long_flag_with_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something something_else".to_owned());
+        parser.parse();
+        assert_eq!(parser.args, vec!["something_else"]);
+    }
+
+    #[test]
+    fn long_flags_with_args_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something --something-else something_else_again".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["something", "something-else"]);
+    }
+
+    #[test]
+    fn long_flags_with_args_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("--something --something-else something_else_again".to_owned());
+        parser.parse();
+        assert_eq!(parser.args, vec!["something_else_again"]);
+    }
+
+    #[test]
+    fn many_flags() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("argument1 -o -p -sfr --long-option another_argument --another-long-option".to_owned());
+        parser.parse();
+        assert_eq!(parser.flags, vec!["o", "p", "s", "f", "r", "long-option", "another-long-option"]);
+    }
+
+    #[test]
+    fn many_args() {
+        let mut parser: crate::ArgParser = crate::ArgParser::new("argument1 -o -p -sfr --long-option another_argument --another-long-option".to_owned());
+        parser.parse();
+        assert_eq!(parser.args, vec!["argument1", "another_argument"]);
+    }
+}
+
 /// The argument parser for Quantii Shell (Qiish).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArgParser {
